@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.lchen</groupId>
+        <artifactId>lchen</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>lchen-user</artifactId>
+    <description>lchen-user project for Spring Boot</description>
+
+    <dependencies>
+        <!-- SpringCloud Ailibaba Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Ailibaba Nacos Config -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lchen</groupId>
+            <artifactId>lchen-common-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lchen</groupId>
+            <artifactId>lchen-common-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lchen</groupId>
+            <artifactId>lchen-common-swagger</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lchen</groupId>
+            <artifactId>lchen-user-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
