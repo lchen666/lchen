@@ -3,6 +3,7 @@ package com.lchen.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lchen.common.core.constant.Constants;
+import com.lchen.common.core.jwt.JwtModel;
 import com.lchen.common.core.utils.*;
 import com.lchen.common.redis.util.RedisUtils;
 import com.lchen.user.entity.SysUser;
@@ -38,19 +39,19 @@ public class TokenUtil {
         String encryptToken = RSAUtil.encrypt(tokenStr, publicKey);
         response.setHeader(Constants.WEB_AUTH, encryptToken);
         CookieUtil.setCookie(request, response, Constants.WEB_AUTH, encryptToken);
-        saveUserInfo(sysUser, privateKey, encryptToken);
-        saveToken(encryptToken, sysUser.getUserId().toString());
+        saveSysUserInfo(sysUser, privateKey, encryptToken);
+        saveToken(encryptToken, sysUser.getUserId().toString(),false);
         return encryptToken;
     }
 
 
     /**
-     * 保存登录信息到redis
+     * 保存系统登录用户信息到redis
      * @param sysUser
      * @param privateKey
      * @param token
      */
-    public void saveUserInfo(SysUser sysUser, String privateKey, String token){
+    public void saveSysUserInfo(SysUser sysUser, String privateKey, String token){
         Map<String, Object> map = new HashMap<>();
         map.put("privateKey", privateKey);
         map.put("userId", sysUser.getUserId());
@@ -62,11 +63,27 @@ public class TokenUtil {
     }
 
     /**
+     * 保存app登录信息
+     * @param jwtModel
+     * @param token
+     */
+    public void saveUserInfo(JwtModel jwtModel, String token){
+        String jsonString = JSONObject.toJSONString(jwtModel);
+        redisUtils.set(Constants.APP_TOKEN_KEY + token, jsonString, Constants.APP_TOKEN_EXPIRE);
+        //
+        saveToken(token, jwtModel.getUserId().toString(),true);
+    }
+
+    /**
      * 保存token
      * @param token
      */
-    public void saveToken(String token, String userId){
-        redisUtils.set(Constants.WEB_LOGIN_USER + userId, JSON.toJSONString(token), Constants.WEB_TOKEN_EXPIRE);
+    public void saveToken(String token, String userId, boolean isApp){
+        if (isApp){
+            redisUtils.set(Constants.APP_LOGIN_USER + userId, JSON.toJSONString(token), Constants.APP_TOKEN_EXPIRE);
+        }else {
+            redisUtils.set(Constants.WEB_LOGIN_USER + userId, JSON.toJSONString(token), Constants.WEB_TOKEN_EXPIRE);
+        }
     }
 
 }

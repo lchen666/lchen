@@ -40,6 +40,9 @@ public class SessionContext {
             //app
             isApp = true;
             sessionId = request.getHeader(Constants.APP_AUTH);
+            if (StringUtil.isEmpty(sessionId)){
+                return null;
+            }
         }
         return getSession(isApp, sessionId, request);
     }
@@ -55,19 +58,21 @@ public class SessionContext {
         }
         if (jsonObject != null){
             // 取web token缓存
-            String privateKey = jsonObject.getString("privateKey");
-            if (checkToken(privateKey, token) == null) {
-                log.error(" token验证失败！");
-                throw new BaseException("token验证失败！", 602);
+            if (!isApp){
+                String privateKey = jsonObject.getString("privateKey");
+                if (checkToken(privateKey, token) == null) {
+                    log.error(" token验证失败！");
+                    throw new BaseException("token验证失败", 602);
+                }
             }
             if (checkOtherLogin(isApp, jsonObject.getLong("userId"), token)) {
-                throw new BaseException("此用户在异地登录！", 603);
+                throw new BaseException("此用户在其他地方登录", 603);
             }
             // 取出redis值 放入session
             return jsonObject;
         }else {
-            log.info(token + " token 已过期！");
-            throw new BaseException("token已失效！", 601);
+            log.info(token + " token 无效！");
+            throw new BaseException("token无效！", 601);
         }
     }
 

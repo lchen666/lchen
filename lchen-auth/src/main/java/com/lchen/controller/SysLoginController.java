@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 @Api(tags = "系统管理员登录")
 @RestController
 @Slf4j
+@RequestMapping("/system")
 public class SysLoginController {
 
     @Autowired
@@ -32,7 +33,7 @@ public class SysLoginController {
     }
 
     @ApiOperation("登录")
-    @PostMapping("/system/login")
+    @PostMapping("/login")
     public R<?> login(@RequestBody LoginFormDto loginForm){
         try {
             return R.ok(loginService.login(loginForm));
@@ -42,7 +43,7 @@ public class SysLoginController {
     }
 
     @ApiOperation("登出")
-    @DeleteMapping("/system/loginOut")
+    @DeleteMapping("/loginOut")
     public R<?> loginOut(HttpServletRequest request, HttpServletResponse response){
         try {
             loginService.loginOut(request, response);

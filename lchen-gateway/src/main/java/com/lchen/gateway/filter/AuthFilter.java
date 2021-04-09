@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @ConfigurationProperties("org.my.url")
 @Slf4j
 @Setter
+@Order(0)
 public class AuthFilter implements GlobalFilter {
 
     private String[] skipAuthUrls;
@@ -43,10 +45,7 @@ public class AuthFilter implements GlobalFilter {
             return chain.filter(exchange);
         }
         if (exchange.getRequest().getHeaders().containsKey(Constants.APP_AUTH)){
-            //app端
-            if (StringUtil.isEmpty(exchange.getRequest().getHeaders().getFirst(Constants.APP_AUTH))){
-                return setUnauthorizedResponse(exchange, "令牌不能为空", 604);
-            }
+            //app端 直接放行
         }else {
             //web 端
             if (!exchange.getRequest().getCookies().containsKey(Constants.WEB_AUTH)){
@@ -54,11 +53,11 @@ public class AuthFilter implements GlobalFilter {
             }
             String token = exchange.getRequest().getCookies().getFirst(Constants.WEB_AUTH).getValue();
             if (StringUtil.isEmpty(token)){
-                return setUnauthorizedResponse(exchange, "令牌不能为空", 604);
+                return setUnauthorizedResponse(exchange, "令牌无效", 601);
             }
             JSONObject jsonObject = redisUtil.getAndExpire(Constants.WEB_TOKEN_KEY + token, JSONObject.class, Constants.WEB_TOKEN_EXPIRE);
             if (jsonObject == null || jsonObject.getString("privateKey") == null || jsonObject.getLong("userId") == null){
-                return setUnauthorizedResponse(exchange, "登录状态已过期", 601);
+                return setUnauthorizedResponse(exchange, "令牌无效", 601);
             }
             if (SessionContext.getContext(redisUtil).checkToken(jsonObject.getString("privateKey"), token) == null) {
                 return setUnauthorizedResponse(exchange, "令牌验证失败", 602);

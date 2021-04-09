@@ -83,6 +83,11 @@ public class Constants {
     public static final String CAPTCHA_CODE_KEY = "captcha_codes:%s";
 
     /**
+     * 手机验证码 redis key
+     */
+    public static final String VERIFY_CODE_KEY = "verify_codes:%s";
+
+    /**
      * 验证码有效期（分钟）
      */
     public static final long CAPTCHA_EXPIRATION = 5;
@@ -148,4 +153,5 @@ public class Constants {
      * app登录用户标识
      */
     public static final String APP_LOGIN_USER  = "app_user:";
+
 }
