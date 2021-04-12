@@ -428,7 +428,7 @@ public class StringUtil extends StringUtils
     /**
      * 判断url是否与规则配置: 
      * ? 表示单个字符; 
-     * * 表示一层路径内的任意字符串，不可跨层级; 
+     * * 表示一层路径内的任意字符串，不可跨层级;
      * ** 表示任意层路径;
      * 
      * @param pattern 匹配规则

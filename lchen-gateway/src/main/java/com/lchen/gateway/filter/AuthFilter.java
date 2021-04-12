@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Component
-@ConfigurationProperties("org.my.url")
+@ConfigurationProperties("check.auth.url")
 @Slf4j
 @Setter
 @Order(0)
@@ -69,8 +69,7 @@ public class AuthFilter implements GlobalFilter {
         return chain.filter(exchange);
     }
 
-    private Mono<Void> setUnauthorizedResponse(ServerWebExchange exchange, String msg, int code)
-    {
+    public Mono<Void> setUnauthorizedResponse(ServerWebExchange exchange, String msg, int code){
         ServerHttpResponse response = exchange.getResponse();
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         response.setStatusCode(HttpStatus.OK);
