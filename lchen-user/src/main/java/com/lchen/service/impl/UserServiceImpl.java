@@ -7,6 +7,8 @@ import com.lchen.service.UserService;
 import com.lchen.user.entity.User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务实现类
@@ -33,5 +35,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return addUser;
         }
         return user;
+    }
+
+
+    @Override
+    public List<User> selectUserList() {
+        return this.getBaseMapper().selectList( new QueryWrapper<>());
     }
 }
