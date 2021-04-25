@@ -2,6 +2,8 @@ package com.lchen.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.lchen.common.core.annotation.JwtCheck;
 import com.lchen.common.core.dto.R;
 import com.lchen.common.core.dto.SessionContext;
@@ -46,8 +48,8 @@ public class UserController {
     @ApiOperation(value = "登录或注册", notes = "提供feign")
     @PostMapping("/loginOrRegister")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "isLogin", value = "是否登录", paramType = "form", dataType = "Boolean"),
+            @ApiImplicitParam(name = "phone", value = "手机号", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "isLogin", value = "是否登录", paramType = "query", dataType = "Boolean"),
     })
     public R<User> loginOrRegister(@RequestParam(value = "phone") String phone, @RequestParam(value = "isLogin") Boolean isLogin){
         try {
@@ -60,19 +62,41 @@ public class UserController {
 
     @ApiOperation(value = "导出用户")
     @PostMapping("/export")
-    public void export(HttpServletResponse response) throws IOException
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "userName", value = "用户名", paramType = "query", dataType = "String"),
+    })
+    public void export(HttpServletResponse response, @RequestParam(value = "phone") String phone, @RequestParam(value = "userName") String userName) throws IOException
     {
         List<User> list = userService.selectUserList();
         ExcelUtil<User> util = new ExcelUtil<User>(User.class);
-        util.exportExcel(response, list, "用户数据");
+        String fileName = phone + "_" + userName + ".xls";
+        util.exportExcel(response, list, "用户数据", fileName);
+    }
+
+    @ApiOperation(value = "分页查询所有用户")
+    @GetMapping("/getAll")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "userName", value = "用户名", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "pageNum", value = "第几页", paramType = "query", dataType = "Integer", required = true),
+            @ApiImplicitParam(name = "pageSize", value = "每页的数量", paramType = "query", dataType = "Integer", required = true)
+    })
+    public R<?> getAllUser(@RequestParam(value = "phone", required = false) String phone,
+                           @RequestParam(value = "userName", required = false) String userName,
+                           @RequestParam(value = "pageNum") Integer pageNum, @RequestParam(value = "pageSize") Integer pageSize){
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> list = userService.selectUserList();
+        PageInfo<User> pageInfo = new PageInfo<>(list);
+        return R.ok(pageInfo);
     }
 
     @JwtCheck
     @ApiOperation(value = "测试切面拦截1")
     @GetMapping("/testJwt")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "isLogin", value = "是否登录", paramType = "form", dataType = "Boolean"),
+            @ApiImplicitParam(name = "phone", value = "手机号", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "isLogin", value = "是否登录", paramType = "query", dataType = "Boolean"),
     })
     public R<?> testJwt(@RequestParam(value = "phone") String phone, @RequestParam(value = "isLogin") Boolean isLogin){
         JwtModel session = JwtSessionUtil.getSession(ServletUtils.getRequest());

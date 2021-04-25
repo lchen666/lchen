@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -294,10 +295,12 @@ public class ExcelUtil<T>
      * @return 结果
      * @throws IOException
      */
-    public void exportExcel(HttpServletResponse response, List<T> list, String sheetName) throws IOException
+    public void exportExcel(HttpServletResponse response, List<T> list, String sheetName, String fileName) throws IOException
     {
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
+        fileName = URLEncoder.encode(fileName, "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ";" + "filename*=utf-8''"+fileName);
         this.init(list, sheetName, Type.EXPORT);
         exportExcel(response.getOutputStream());
     }
