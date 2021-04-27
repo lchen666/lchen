@@ -79,8 +79,8 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "userName", value = "用户名", paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "pageNum", value = "第几页", paramType = "query", dataType = "Integer", required = true),
-            @ApiImplicitParam(name = "pageSize", value = "每页的数量", paramType = "query", dataType = "Integer", required = true)
+            @ApiImplicitParam(name = "pageNum", value = "第几页", paramType = "query", dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "每页的数量", paramType = "query", dataType = "Integer")
     })
     public R<?> getAllUser(@RequestParam(value = "phone", required = false) String phone,
                            @RequestParam(value = "userName", required = false) String userName,
