@@ -1,12 +1,9 @@
 package com.lchen;
 
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import com.lchen.common.swagger.annotation.EnableCustomSwagger2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
@@ -14,11 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *
  * @author lchen
  */
-@SpringBootApplication(exclude = {
-        DataSourceAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class,
-        DruidDataSourceAutoConfigure.class ,
-        HibernateJpaAutoConfiguration.class})
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)//自动装配去掉数据源配置
 @EnableFeignClients
 @EnableCustomSwagger2
 public class LchenAuthApplication {
