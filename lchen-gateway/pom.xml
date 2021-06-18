@@ -64,11 +64,6 @@
         <!-- Swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.fox.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>${swagger.fox.version}</version>
         </dependency>
@@ -76,11 +71,6 @@
         <dependency>
             <groupId>com.lchen</groupId>
             <artifactId>lchen-common-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lchen</groupId>
-            <artifactId>lchen-common-redis</artifactId>
         </dependency>
 
     </dependencies>

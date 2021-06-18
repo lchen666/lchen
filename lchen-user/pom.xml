@@ -37,21 +37,6 @@
 
         <dependency>
             <groupId>com.lchen</groupId>
-            <artifactId>lchen-common-redis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lchen</groupId>
-            <artifactId>lchen-common-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lchen</groupId>
-            <artifactId>lchen-common-swagger</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lchen</groupId>
             <artifactId>lchen-user-api</artifactId>
         </dependency>
 

@@ -30,21 +30,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.lchen</groupId>
-            <artifactId>lchen-common-redis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lchen</groupId>
-            <artifactId>lchen-common-swagger</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.lchen</groupId>
-            <artifactId>lchen-common-core</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.whvcse</groupId>
             <artifactId>easy-captcha</artifactId>
             <version>1.6.2</version>

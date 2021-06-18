@@ -53,13 +53,8 @@ public class ThreadPoolService {
 
 
     public static void main(String[] args) {
-        for (int i = 0; i < 100; i++){
-            newTask(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println(Thread.currentThread().getName() + " is running ..");
-                }
-            });
+        for (int i = 0; i < 12; i++){
+            newTask(() -> System.out.println(Thread.currentThread().getName() + " is running .."));
         }
     }
 }

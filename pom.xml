@@ -163,6 +163,7 @@
         <module>lchen-auth</module>
         <module>lchen-user</module>
         <module>lchen-api</module>
+        <module>lchen-search</module>
     </modules>
     <packaging>pom</packaging>
 

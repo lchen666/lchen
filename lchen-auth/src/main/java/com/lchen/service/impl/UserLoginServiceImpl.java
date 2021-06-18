@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     private String privateKey;
 
     @Override
+    @Transactional
     public UserVO login(Map<String, Object> map) {
         String phone = (String) map.get("phone");
         if (StringUtil.isEmpty(phone)) {
