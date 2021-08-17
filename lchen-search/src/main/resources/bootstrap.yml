@@ -16,7 +16,3 @@ spring:
         server-addr: 127.0.0.1:8847
         # 配置文件格式
         file-extension: yml
-  data:
-    elasticsearch:
-      cluster-name: my-elasticsearch
-      cluster-nodes: 127.0.0.1:9301, 127.0.0.1:9302, 127.0.0.1:9303
