@@ -48,17 +48,14 @@ public class ValidateCodeServiceImpl implements ValidateCodeService {
 
     @Override
     public void checkCaptcha(String uuid, String code) {
-        if (StringUtil.isAnyBlank(code, uuid)){
-            throw new BaseException("验证码/uuid参数不能为空!", 201);
-        }
         String verifyKey = String.format(Constants.CAPTCHA_CODE_KEY, uuid);
         Object o = redisUtil.get(verifyKey);
         if (o == null){
-            throw new BaseException("验证码已失效!", 202);
+            throw new BaseException("验证码已失效", 202);
         }
-        redisUtil.del(verifyKey);
+//        redisUtil.del(verifyKey);
         if (!o.toString().equals(code)){
-            throw new BaseException("验证码不匹配!", 203);
+            throw new BaseException("验证码不匹配", 203);
         }
     }
 }

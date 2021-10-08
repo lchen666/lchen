@@ -2,6 +2,7 @@ package com.lchen.common.core.dto;
 
 import com.alibaba.fastjson.JSONObject;
 import com.lchen.common.core.constant.Constants;
+import com.lchen.common.core.constant.HttpStatus;
 import com.lchen.common.core.exception.BaseException;
 import com.lchen.common.core.utils.CookieUtil;
 import com.lchen.common.core.utils.RSAUtil;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 public class SessionContext {
 
     private static SessionContext context;
+
     private RedisUtils redisUtil;
 
     public SessionContext(){}
@@ -34,21 +36,21 @@ public class SessionContext {
 
 
     public JSONObject getSession(HttpServletRequest request){
-        Boolean isApp = false;
+        boolean isApp = false;
         String sessionId = CookieUtil.getCookie(request, Constants.WEB_AUTH);//web
         if (StringUtil.isEmpty(sessionId)){
             //app
             isApp = true;
             sessionId = request.getHeader(Constants.APP_AUTH);
-            if (StringUtil.isEmpty(sessionId)){
-                return null;
-            }
         }
-        return getSession(isApp, sessionId, request);
+        if (StringUtil.isEmpty(sessionId)){
+            throw new BaseException("token不能为空", HttpStatus.UNAUTHORIZED);
+        }
+        return getSession(isApp, sessionId);
     }
 
-    public JSONObject getSession(Boolean isApp, String token, HttpServletRequest request){
-        JSONObject jsonObject = null;
+    public JSONObject getSession(Boolean isApp, String token){
+        JSONObject jsonObject;
         if (isApp){
             //获取app token
             jsonObject = redisUtil.getAndExpire(Constants.APP_TOKEN_KEY + token, JSONObject.class, Constants.APP_TOKEN_EXPIRE);
@@ -56,27 +58,30 @@ public class SessionContext {
             //获取web token
             jsonObject = redisUtil.getAndExpire(Constants.WEB_TOKEN_KEY + token, JSONObject.class, Constants.WEB_TOKEN_EXPIRE);
         }
-        if (jsonObject != null){
-            // 取web token缓存
-            if (!isApp){
-                String privateKey = jsonObject.getString("privateKey");
-                if (checkToken(privateKey, token) == null) {
-                    log.error(" token验证失败！");
-                    throw new BaseException("token验证失败", 602);
-                }
-            }
-            if (checkOtherLogin(isApp, jsonObject.getLong("userId"), token)) {
-                throw new BaseException("此用户在其他地方登录", 603);
-            }
-            // 取出redis值 放入session
-            return jsonObject;
-        }else {
-            log.info(token + " token 无效！");
-            throw new BaseException("token无效！", 601);
+        if (jsonObject == null){
+            throw new BaseException("token已过期", HttpStatus.FORBIDDEN);
         }
+        // 校验token
+        if (!isApp){
+            String privateKey = jsonObject.getString("privateKey");
+            if (checkToken(privateKey, token) == null) {
+                throw new BaseException("token校验失败", HttpStatus.UNAUTHORIZED);
+            }
+        }
+        if (checkOtherLogin(isApp, jsonObject.getLong("userId"), token)) {
+            throw new BaseException("在其他地方已有登录", HttpStatus.UNAUTHORIZED);
+        }
+        return jsonObject;
     }
 
 
+    /**
+     * 检测是否异地登录
+     * @param isApp
+     * @param userId
+     * @param token
+     * @return
+     */
     public boolean checkOtherLogin(Boolean isApp, Long userId, String token){
         String oldToken = "";
         if (isApp){
@@ -90,6 +95,12 @@ public class SessionContext {
         return true;
     }
 
+    /**
+     * 验证token
+     * @param privateKey
+     * @param token
+     * @return
+     */
     public String checkToken(String privateKey, String token){
         String newToken = null;
         try {

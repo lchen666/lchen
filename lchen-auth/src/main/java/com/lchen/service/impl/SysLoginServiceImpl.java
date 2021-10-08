@@ -38,9 +38,6 @@ public class SysLoginServiceImpl implements SysLoginService {
 
     @Override
     public SysUserVO login(LoginFormDto formDto) {
-        if (StringUtil.isAnyBlank(formDto.getUserName(), formDto.getPassword())){
-            throw new BaseException("用户名/密码不能为空！", 101);
-        }
         //验证码校验
         codeService.checkCaptcha(formDto.getUuId(), formDto.getVerCode());
         //获取登录信息
@@ -60,7 +57,7 @@ public class SysLoginServiceImpl implements SysLoginService {
         }
         String cryptPassword = PasswordUtil.cryptPassword(sysUser.getUserId().toString(), decryptPassword);
         if (!cryptPassword.equals(sysUser.getPassword())){
-            throw new BaseException("密码错误！", 104);
+            throw new BaseException("密码错误", 104);
         }
         //登陆成功 生成token
         tokenUtil.createToken(sysUser);
@@ -77,7 +74,7 @@ public class SysLoginServiceImpl implements SysLoginService {
         try {
             CookieUtil.delCookie(request, response, Constants.WEB_AUTH);
         }catch (Exception e){
-            throw new BaseException("刪除cookie失败！");
+            throw new BaseException("刪除cookie失败");
         }
 
     }

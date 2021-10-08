@@ -31,11 +31,7 @@ public class AppLoginController {
             @ApiJsonProperty(type = String.class, key = "password",description = "密码")
     })
     public R<?> phoneLogin(@RequestBody Map<String, Object> map){
-        try {
-            return R.ok(userLoginService.login(map));
-        }catch (BaseException e){
-            return R.fail(e.getCode(), e.getMessage());
-        }
+        return R.ok(userLoginService.login(map));
     }
 
 }

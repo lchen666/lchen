@@ -52,12 +52,7 @@ public class UserController {
             @ApiImplicitParam(name = "isLogin", value = "是否登录", paramType = "query", dataType = "Boolean"),
     })
     public R<User> loginOrRegister(@RequestParam(value = "phone") String phone, @RequestParam(value = "isLogin") Boolean isLogin){
-        try {
-            return R.ok(userService.loginOrRegister(phone , isLogin));
-        }catch (Exception e){
-            log.error("UserController getUserInfo error: "+e.getMessage(), e);
-        }
-        return R.fail("系统繁忙！");
+        return R.ok(userService.loginOrRegister(phone , isLogin));
     }
 
     @ApiOperation(value = "导出用户")

@@ -167,24 +167,24 @@ public class RSAUtil {
     public static void main(String[] args) throws Exception {
         long temp = System.currentTimeMillis();
         //生成公钥和私钥
-        Map<Integer, String> map = genKeyPair();
+//        Map<Integer, String> map = genKeyPair();
         //加密字符串
-        System.out.println("公钥:" + map.get(0));
-        System.out.println("私钥:" + map.get(1));
-        System.out.println("生成密钥消耗时间:" + (System.currentTimeMillis() - temp) / 1000.0 + "秒");
+//        System.out.println("公钥:" + map.get(0));
+//        System.out.println("私钥:" + map.get(1));
+//        System.out.println("生成密钥消耗时间:" + (System.currentTimeMillis() - temp) / 1000.0 + "秒");
 
 
         String message = "123456";
         System.out.println("原文:" + message);
 
         temp = System.currentTimeMillis();
-        String messageEn = encrypt(message, map.get(0));
+        String messageEn = encrypt(message, "MIGbMA0GCSqGSIb3DQEBAQUAA4GJADCBhQJ-AIKRk6DlBUawvw3Etf8MkX1-X25KDL3X8TPVaD-RQr5PHKydibgjoZp8Ccmity2ulwXqElR9VpIUFL_s4Gi2uClr_5wwSM7UazWYjLHj_3eoNDGvOl3voH1SKS01jathwext3zGHWsX7rSBdpkp-XFaIYxnMDfuNEG1diyO1AgMBAAE");
         System.out.println("密文:" + messageEn);
         System.out.println("加密消耗时间:" + (System.currentTimeMillis() - temp) / 1000.0 + "秒");
 
         temp = System.currentTimeMillis();
 
-        String messageDe = decrypt(messageEn, map.get(1));
+        String messageDe = decrypt(messageEn, "MIICZgIBADANBgkqhkiG9w0BAQEFAASCAlAwggJMAgEAAn4AgpGToOUFRrC_DcS1_wyRfX5fbkoMvdfxM9VoP5FCvk8crJ2JuCOhmnwJyaK3La6XBeoSVH1WkhQUv-zgaLa4KWv_nDBIztRrNZiMseP_d6g0Ma86Xe-gfVIpLTWNq2HB7G3fMYdaxfutIF2mSn5cVohjGcwN-40QbV2LI7UCAwEAAQJ9U8OI7iN-6wbgyrhz-ZfajqPQHTUsT26Fszcplf5ezzB5uNOoUpWpSy5gKRdWZNwozwaHk-SE8VoopagVn5fqcDHQWdffL4k8pC0Bag5pqlvpn0DAvkfLJOCUVgJa-Ceh1uKlikYK7UMgDdu46Ilm8lOv28v7JUFEUpG9fVECPwzrFLb6O2ehxoeL-FPKXimnbAluB6V4CNn26wfjcVdixJJkcSK4WJnSkS_sKJMymVTZnFrdcjY4dK_lYHKi_wI_Cht2Yd3xUUNo9AVWooPo_OYxq4MfYtRDzflDyGx7HYwvO6tS8655kPmQvlMK7D6txRjBo_F1fiBl_P3VAZ1LAj8D7Zem7AAUSwTrQoyILgjj8ZzQYTzB-_X1ETf2dhqIz-el_BTK0fNfEsBDKjRMTh6Bxonct2l7Qz94HO9u7FECPwj7IhQQXK-y0H2UiMjboZmnChe26Zqttpo9ladwDW3R9N52e70gGdFikOUtcRU_FLWALAB7O8WZEEbfXfiTRQI_AW3AFoMBrYHFLoLtqaidTYGx15e6sKwG2d0ltOsbcmgvo5uL7M3LwpV7UqfwQt6vBx4bjkd-hjvFpIsh3kdI");
         System.out.println("解密:" + messageDe);
         System.out.println("解密消耗时间:" + (System.currentTimeMillis() - temp) / 1000.0 + "秒");
     }

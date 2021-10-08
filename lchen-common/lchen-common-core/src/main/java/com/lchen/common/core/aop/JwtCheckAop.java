@@ -3,6 +3,7 @@ package com.lchen.common.core.aop;
 
 import com.alibaba.fastjson.JSONObject;
 import com.lchen.common.core.constant.Constants;
+import com.lchen.common.core.constant.HttpStatus;
 import com.lchen.common.core.dto.SessionContext;
 import com.lchen.common.core.utils.CookieUtil;
 import com.lchen.common.core.utils.ResponseUtil;
@@ -51,16 +52,16 @@ public class JwtCheckAop {
             return point.proceed();
         }
         if (StringUtil.isEmpty(token)){
-            ResponseUtil.respJson(response, 601, "token无效");
+            ResponseUtil.respJson(response, HttpStatus.UNAUTHORIZED, "token不能为空");
             return null;
         }else {
             JSONObject jsonObject = redisUtil.getAndExpire(Constants.APP_TOKEN_KEY + token, JSONObject.class, Constants.APP_TOKEN_EXPIRE);
             if (jsonObject == null){
-                ResponseUtil.respJson(response, 601, "token无效");
+                ResponseUtil.respJson(response, HttpStatus.FORBIDDEN, "token已过期");
                 return null;
             }
             if (SessionContext.getContext(redisUtil).checkOtherLogin(true, jsonObject.getLong("userId"), token)) {
-                ResponseUtil.respJson(response, 603, "在其他地方已有登录");
+                ResponseUtil.respJson(response, HttpStatus.UNAUTHORIZED, "在其他地方已有登录");
                 return null;
             }
         }

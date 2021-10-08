@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 
 @Api(tags = "系统管理员登录")
@@ -34,23 +35,14 @@ public class SysLoginController {
 
     @ApiOperation("登录")
     @PostMapping("/login")
-    public R<?> login(@RequestBody LoginFormDto loginForm){
-        try {
-            return R.ok(loginService.login(loginForm));
-        }catch (BaseException e){
-            return R.fail(e.getCode(), e.getMessage());
-        }
+    public R<?> login(@RequestBody @Valid LoginFormDto loginForm){
+        return R.ok(loginService.login(loginForm));
     }
 
     @ApiOperation("登出")
     @DeleteMapping("/loginOut")
     public R<?> loginOut(HttpServletRequest request, HttpServletResponse response){
-        try {
-            loginService.loginOut(request, response);
-            return R.ok();
-        }catch (Exception e){
-            log.error("SysLoginController loginOut error: " + e.getMessage(), e);
-            return R.fail();
-        }
+        loginService.loginOut(request, response);
+        return R.ok();
     }
 }

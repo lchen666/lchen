@@ -1,6 +1,8 @@
 package com.lchen.gateway.filter;
 
 
+import com.lchen.common.core.constant.HttpStatus;
+import com.lchen.common.core.utils.ServletUtils;
 import com.lchen.common.core.utils.StringUtil;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.Setter;
@@ -35,10 +37,7 @@ import java.util.stream.Collectors;
 @Order(1)
 @ConfigurationProperties("check.sign.url")
 @Setter
-public class ParamCheckFilter implements GlobalFilter {
-
-    @Autowired
-    private AuthFilter authFilter;
+public class SignCheckFilter implements GlobalFilter {
 
     private String[] skipSignUrls;
 
@@ -51,14 +50,14 @@ public class ParamCheckFilter implements GlobalFilter {
         }
         //校验时间戳
         List<String> timestamps = exchange.getRequest().getHeaders().get("timestamp");
-        boolean b = StringUtil.isNotEmpty(timestamps) && (Long.valueOf(timestamps.get(0))) + 60000 > new Date().getTime();
+        boolean b = timestamps != null && (Long.parseLong(timestamps.get(0))) + 60000 > new Date().getTime();
         if (!b){
-            return authFilter.setUnauthorizedResponse(exchange, "请求超时", 701);
+            return signCheckResponse(exchange, "请求超时", HttpStatus.TIME_OUT);
         }
         //校验sign是否存在
         List<String> signs = exchange.getRequest().getHeaders().get("sign");
         if (StringUtil.isEmpty(signs))
-            return authFilter.setUnauthorizedResponse(exchange, "签名sign不存在", 702);
+            return signCheckResponse(exchange, "签名sign不存在", HttpStatus.NOT_SIGN);
         //校验签名 1.获取请求中的body 表单参数
         String method = exchange.getRequest().getMethodValue();
         MediaType mediaType = exchange.getRequest().getHeaders().getContentType();
@@ -98,5 +97,11 @@ public class ParamCheckFilter implements GlobalFilter {
     public Boolean checkSign(Map<String, Object> map){
 
         return false;
+    }
+
+    private Mono<Void> signCheckResponse(ServerWebExchange exchange, String msg, int code)
+    {
+        log.error("[参数校验异常处理]请求路径:{}", exchange.getRequest().getPath());
+        return ServletUtils.webFluxResponseWriter(exchange.getResponse(), msg, code);
     }
 }

@@ -1,12 +1,16 @@
 package com.lchen.common.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.lchen.common.core.constant.Constants;
+import com.lchen.common.core.constant.HttpStatus;
+import com.lchen.common.core.dto.R;
+import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 
 public class ResponseUtil {
 
@@ -14,20 +18,17 @@ public class ResponseUtil {
      * 返回json
      * @param response
      */
-    public static void respJson(HttpServletResponse response, Integer code, String message) throws IOException {
+    public static void respJson(HttpServletResponse response, int code, String message) throws IOException {
 
-        Map<Object,Object> map = new HashMap<>();
-        map.put("code",code);
-        map.put("message",message);
-
-        response.setContentType("application/json; charset=utf-8");
-        response.setCharacterEncoding("UTF-8");
-        response.setStatus(code);
+        R<?> result = R.fail(code, message);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(Constants.UTF8);
+        response.setStatus(HttpStatus.SUCCESS);
 
 
-        String userJson = JSONObject.toJSONString(map);
+        String jsonString = JSONObject.toJSONString(result, SerializerFeature.WriteMapNullValue);
         OutputStream out = response.getOutputStream();
-        out.write(userJson.getBytes("UTF-8"));
+        out.write(jsonString.getBytes(StandardCharsets.UTF_8));
         out.flush();
     }
 }

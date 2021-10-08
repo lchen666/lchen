@@ -1,10 +1,10 @@
 package com.lchen.gateway.filter;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lchen.common.core.constant.Constants;
-import com.lchen.common.core.dto.R;
+import com.lchen.common.core.constant.HttpStatus;
 import com.lchen.common.core.dto.SessionContext;
+import com.lchen.common.core.utils.ServletUtils;
 import com.lchen.common.core.utils.StringUtil;
 import com.lchen.common.redis.util.RedisUtils;
 import lombok.Setter;
@@ -14,10 +14,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.buffer.DataBufferFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -49,38 +45,31 @@ public class AuthFilter implements GlobalFilter {
         }else {
             //web 端
             if (!exchange.getRequest().getCookies().containsKey(Constants.WEB_AUTH)){
-                return setUnauthorizedResponse(exchange, "令牌不存在", 605);
+                return unauthorizedResponse(exchange, "令牌不能为空", HttpStatus.UNAUTHORIZED);
             }
             String token = exchange.getRequest().getCookies().getFirst(Constants.WEB_AUTH).getValue();
             if (StringUtil.isEmpty(token)){
-                return setUnauthorizedResponse(exchange, "令牌无效", 601);
+                return unauthorizedResponse(exchange, "令牌不能为空", HttpStatus.UNAUTHORIZED);
             }
             JSONObject jsonObject = redisUtil.getAndExpire(Constants.WEB_TOKEN_KEY + token, JSONObject.class, Constants.WEB_TOKEN_EXPIRE);
-            if (jsonObject == null || jsonObject.getString("privateKey") == null || jsonObject.getLong("userId") == null){
-                return setUnauthorizedResponse(exchange, "令牌无效", 601);
+            if (jsonObject == null){
+                return unauthorizedResponse(exchange, "令牌已过期", HttpStatus.FORBIDDEN);
             }
             if (SessionContext.getContext(redisUtil).checkToken(jsonObject.getString("privateKey"), token) == null) {
-                return setUnauthorizedResponse(exchange, "令牌验证失败", 602);
+                return unauthorizedResponse(exchange, "令牌验证失败", HttpStatus.UNAUTHORIZED);
             }
             if (SessionContext.getContext(redisUtil).checkOtherLogin(false, jsonObject.getLong("userId"), token)){
-                return setUnauthorizedResponse(exchange, "此账号在别处登录", 603);
+                return unauthorizedResponse(exchange, "此账号在别处登录", HttpStatus.UNAUTHORIZED);
             }
         }
         return chain.filter(exchange);
     }
 
-    public Mono<Void> setUnauthorizedResponse(ServerWebExchange exchange, String msg, int code){
-        ServerHttpResponse response = exchange.getResponse();
-        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        response.setStatusCode(HttpStatus.OK);
 
-        log.error("[鉴权异常处理]请求路径:{}", exchange.getRequest().getPath());
-
-        return response.writeWith(Mono.fromSupplier(() -> {
-            DataBufferFactory bufferFactory = response.bufferFactory();
-            return bufferFactory.wrap(JSON.toJSONBytes(R.fail(code, msg)));
-        }));
+    private Mono<Void> unauthorizedResponse(ServerWebExchange exchange, String msg, int code)
+    {
+        log.error("[鉴权异常处理]请求路径:{} {}", exchange.getRequest().getPath(), msg);
+        return ServletUtils.webFluxResponseWriter(exchange.getResponse(), msg, code);
     }
-
 
 }

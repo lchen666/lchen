@@ -17,7 +17,8 @@ public class TestController {
 
     @GetMapping("/test")
     public String test(){
-        JSONObject jsonObject = SessionContext.getContext(redisUtil).getSession(ServletUtils.getRequest());
-        return jsonObject.toJSONString();
+//        JSONObject jsonObject = SessionContext.getContext(redisUtil).getSession(ServletUtils.getRequest());
+        redisUtil.set("aa", "大帅啊");
+        return redisUtil.get("aa").toString();
     }
 }
